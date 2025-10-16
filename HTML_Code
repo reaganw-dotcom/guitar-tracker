@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guitar Progress Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .student-name {
+            font-size: 1.5em;
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .mode-btn.inactive {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .records-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .record-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .record-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .record-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .record-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .record-date {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .record-input {
+            width: 100%;
+            padding: 8px;
+            font-size: 1.5em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .date-input {
+            font-size: 0.9em;
+            padding: 5px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .skill-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .skill-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .skill-label {
+            flex: 1;
+            font-size: 1em;
+        }
+
+        .skill-item.completed {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .skill-item.completed .skill-label {
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .songs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .song-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .song-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .song-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .song-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-learning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-mastered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .song-dates {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .practice-log {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .practice-entry {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .practice-content {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .chords-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .chord-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .chord-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chord-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #19547b;
+            margin-bottom: 15px;
+        }
+
+        .chord-diagram {
+            margin: 15px auto;
+            display: inline-block;
+        }
+
+        .chord-diagram svg {
+            width: 120px;
+            height: 150px;
+        }
+
+        .chord-date {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .chord-edit {
+            margin-top: 15px;
+        }
+
+        .chord-edit input, .chord-edit select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .fret-input {
+            width: 50px !important;
+            display: inline-block;
+            text-align: center;
+            margin: 0 2px;
+        }
+
+        .string-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .string-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+            width: 100%;
+            display: block;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .add-btn:active {
+            transform: translateY(0px);
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .edit-mode {
+            display: none;
+        }
+
+        .view-mode {
+            display: none;
+        }
+
+        body.editing .edit-mode {
+            display: block !important;
+        }
+
+        body.editing .view-mode {
+            display: none !important;
+        }
+
+        body.viewing .edit-mode {
+            display: none !important;
+        }
+
+        body.viewing .view-mode {
+            display: block !important;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .trophy {
+            font-size: 3em;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .celebration {
+            text-align: center;
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .records-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="viewing">
+    <div class="container">
+        <div class="header">
+            <h1>🎸 Guitar Progress Tracker 🎸</h1>
+            <div class="student-name" id="studentNameDisplay">Student Name</div>
+            
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('view', event)">👀 View Mode</button>
+                <button class="mode-btn inactive" onclick="setMode('edit', event)">✏️</button>
+            </div>
+        </div>
+
+        <!-- Modal for adding chords -->
+        <div id="chordModal" class="modal">
+            <div class="modal-content">
+                <h3>Add New Chord</h3>
+                <input type="text" id="chordNameInput" placeholder="Enter chord name (e.g., Em, G, C)">
+                <div class="modal-buttons">
+                    <button class="modal-btn secondary" onclick="closeChordModal()">Cancel</button>
+                    <button class="modal-btn primary" onclick="confirmAddChord()">Add Chord</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Name Edit -->
+        <div class="edit-mode">
+            <div class="section">
+                <h2>👤 Student Info</h2>
+                <div class="input-group">
+                    <label>Student Name:</label>
+                    <input type="text" id="studentName" placeholder="Enter student name">
+                </div>
+            </div>
+        </div>
+
+        <!-- High Scores Section -->
+        <div class="section">
+            <h2><span>🏆</span> High Scores & Records</h2>
+            
+            <div class="view-mode">
+                <div class="records-grid" id="recordsDisplay"></div>
+            </div>
+
+            <div class="edit-mode">
+                <div class="records-grid">
+                    <div class="record-card">
+                        <div class="record-label">1-Minute Chord Changes (Em ↔ G)</div>
+                        <input type="number" class="record-input" id="record1" placeholder="0">
+                        <input type="date" class="record-input date-input" id="date1">
+                    </div>
+                    <div class="record-card">
+                        <div class="record-label">Speed Ladder Top BPM</div>
+                        <input type="number" class="record-input" id="record2" placeholder="0">
+                        <input type="date" class="record-input date-input" id="date2">
+                    </div>
+                    <div class="record-card">
+                        <div class="record-label">Buzzkill Challenge (Lowest Score)</div>
+                        <input type="number" class="record-input" id="record3" placeholder="0">
+                        <input type="date" class="record-input date-input" id="date3">
+                    </div>
+                    <div class="record-card">
+                        <div class="record-label">Match My Pitch (Fewest Tries)</div>
+                        <input type="number" class="record-input" id="record4" placeholder="0">
+                        <input type="date" class="record-input date-input" id="date4">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chord Repertoire -->
+        <div class="section" style="background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);">
+            <h2><span>🎸</span> Chord Repertoire</h2>
+            
+            <div class="chords-grid" id="chordsList"></div>
+            
+            <div class="edit-mode">
+                <button class="add-btn" onclick="addChord()">+ Add New Chord</button>
+            </div>
+        </div>
+
+        <!-- Songs -->
+        <div class="section" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+            <h2><span>🎵</span> Song Journey</h2>
+            
+            <div class="songs-list" id="songsList"></div>
+            
+            <div class="edit-mode">
+                <button class="add-btn" onclick="addSong()">+ Add New Song</button>
+            </div>
+        </div>
+
+        <!-- Practice Log -->
+        <div class="section" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+            <h2><span>📝</span> Practice Log</h2>
+            
+            <div class="practice-log" id="practiceLog"></div>
+            
+            <div class="edit-mode">
+                <button class="add-btn" onclick="addPractice()">+ Add Practice Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure
+        let data = {
+            studentName: 'Student Name',
+            records: {
+                record1: { value: '', date: '', label: '1-Minute Chord Changes (Em ↔ G)' },
+                record2: { value: '', date: '', label: 'Speed Ladder Top BPM' },
+                record3: { value: '', date: '', label: 'Buzzkill Challenge (Lowest Score)' },
+                record4: { value: '', date: '', label: 'Match My Pitch (Fewest Tries)' }
+            },
+            chords: [],
+            songs: [],
+            practices: []
+        };
+
+        // Load data
+        function loadData() {
+            const saved = localStorage.getItem('guitarTrackerData');
+            if (saved) {
+                const loadedData = JSON.parse(saved);
+                // Merge with default structure to ensure all fields exist
+                data = {
+                    studentName: loadedData.studentName || 'Student Name',
+                    records: {
+                        ...data.records,
+                        ...(loadedData.records || {})
+                    },
+                    chords: loadedData.chords || [],
+                    songs: loadedData.songs || [],
+                    practices: loadedData.practices || []
+                };
+                // Update old record4 label if it exists
+                if (data.records.record4 && data.records.record4.label === 'Total Songs Mastered') {
+                    data.records.record4.label = 'Match My Pitch (Fewest Tries)';
+                }
+            }
+            render();
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem('guitarTrackerData', JSON.stringify(data));
+        }
+
+        // Set mode
+        function setMode(mode, evt) {
+            document.body.className = mode === 'edit' ? 'editing' : 'viewing';
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('inactive');
+            });
+            
+            // Find the button that was clicked
+            if (evt && evt.target) {
+                evt.target.classList.add('active');
+                evt.target.classList.remove('inactive');
+            }
+            render();
+        }
+
+        // Render everything
+        function render() {
+            renderStudentName();
+            renderRecords();
+            renderChords();
+            renderSongs();
+            renderPractices();
+        }
+
+        function renderStudentName() {
+            document.getElementById('studentNameDisplay').textContent = data.studentName;
+            document.getElementById('studentName').value = data.studentName;
+        }
+
+        function renderRecords() {
+            const container = document.getElementById('recordsDisplay');
+            container.innerHTML = '';
+            
+            Object.keys(data.records).forEach(key => {
+                const record = data.records[key];
+                if (record.value) {
+                    const card = document.createElement('div');
+                    card.className = 'record-card';
+                    card.innerHTML = `
+                        <div class="record-label">${record.label}</div>
+                        <div class="record-value">${record.value}</div>
+                        <div class="record-date">${record.date ? new Date(record.date).toLocaleDateString() : ''}</div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No records yet! Start practicing to set some high scores! 🎯</p>';
+            }
+        }
+
+        // Chord diagram presets
+        const chordPresets = {
+            'Em': { frets: ['0', '2', '2', '0', '0', '0'], fingers: [null, '2', '3', null, null, null] },
+            'G': { frets: ['3', '2', '0', '0', '0', '3'], fingers: ['2', '1', null, null, null, '3'] },
+            'C': { frets: ['x', '3', '2', '0', '1', '0'], fingers: [null, '3', '2', null, '1', null] },
+            'D': { frets: ['x', 'x', '0', '2', '3', '2'], fingers: [null, null, null, '1', '3', '2'] },
+            'Am': { frets: ['x', '0', '2', '2', '1', '0'], fingers: [null, null, '2', '3', '1', null] },
+            'E': { frets: ['0', '2', '2', '1', '0', '0'], fingers: [null, '2', '3', '1', null, null] },
+            'A': { frets: ['x', '0', '2', '2', '2', '0'], fingers: [null, null, '1', '2', '3', null] },
+            'Dm': { frets: ['x', 'x', '0', '2', '3', '1'], fingers: [null, null, null, '2', '3', '1'] },
+            'F': { frets: ['1', '3', '3', '2', '1', '1'], fingers: ['1', '3', '4', '2', '1', '1'] },
+            'Cmaj7': { frets: ['x', '3', '2', '0', '0', '0'], fingers: [null, '3', '2', null, null, null] },
+            'Dsus2': { frets: ['x', 'x', '0', '2', '3', '0'], fingers: [null, null, null, '1', '2', null] }
+        };
+
+        function drawChordDiagram(frets) {
+            const strings = 6;
+            const fretsToShow = 4;
+            const stringSpacing = 20;
+            const fretSpacing = 30;
+            const width = stringSpacing * (strings - 1) + 20;
+            const height = fretSpacing * fretsToShow + 30;
+            
+            let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Draw frets (horizontal lines)
+            for (let i = 0; i <= fretsToShow; i++) {
+                const y = 20 + i * fretSpacing;
+                const strokeWidth = i === 0 ? 3 : 1;
+                svg += `<line x1="10" y1="${y}" x2="${width - 10}" y2="${y}" stroke="#333" stroke-width="${strokeWidth}"/>`;
+            }
+            
+            // Draw strings (vertical lines)
+            for (let i = 0; i < strings; i++) {
+                const x = 10 + i * stringSpacing;
+                svg += `<line x1="${x}" y1="20" x2="${x}" y2="${20 + fretsToShow * fretSpacing}" stroke="#333" stroke-width="2"/>`;
+            }
+            
+            // Draw finger positions and muted/open strings
+            for (let i = 0; i < strings; i++) {
+                const x = 10 + i * stringSpacing;
+                const fret = frets[i];
+                
+                if (fret === 'x' || fret === 'X') {
+                    // Muted string
+                    svg += `<text x="${x}" y="15" text-anchor="middle" font-size="14" font-weight="bold">×</text>`;
+                } else if (fret === '0') {
+                    // Open string
+                    svg += `<circle cx="${x}" cy="10" r="4" fill="none" stroke="#333" stroke-width="2"/>`;
+                } else {
+                    // Fretted note
+                    const fretNum = parseInt(fret);
+                    const y = 20 + (fretNum - 0.5) * fretSpacing;
+                    svg += `<circle cx="${x}" cy="${y}" r="6" fill="#19547b"/>`;
+                }
+            }
+            
+            svg += '</svg>';
+            return svg;
+        }
+
+        function renderChords() {
+            const container = document.getElementById('chordsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (!data.chords || data.chords.length === 0) {
+                if (document.body.classList.contains('viewing')) {
+                    container.innerHTML = '<p style="text-align: center; color: white;">No chords learned yet! 🎸</p>';
+                }
+                return;
+            }
+            
+            data.chords.forEach((chord, index) => {
+                const card = document.createElement('div');
+                card.className = 'chord-card';
+                
+                if (document.body.classList.contains('viewing')) {
+                    card.innerHTML = `
+                        <div class="chord-name">${chord.name}</div>
+                        <div class="chord-diagram">${drawChordDiagram(chord.frets)}</div>
+                        <div class="chord-date">Learned: ${chord.dateLearned ? new Date(chord.dateLearned).toLocaleDateString() : 'N/A'}</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="chord-edit">
+                            <input type="text" value="${chord.name}" placeholder="Chord name (e.g., Em)" onchange="updateChord(${index}, 'name', this.value)">
+                            
+                            <select onchange="applyChordPreset(${index}, this.value)">
+                                <option value="">-- Load Preset --</option>
+                                ${Object.keys(chordPresets).map(name => 
+                                    `<option value="${name}">${name}</option>`
+                                ).join('')}
+                            </select>
+                            
+                            <div class="string-label">String frets (E A D G B e):</div>
+                            <div class="string-inputs">
+                                ${chord.frets.map((fret, fretIdx) => 
+                                    `<input type="text" class="fret-input" value="${fret}" maxlength="1" 
+                                     placeholder="0" onchange="updateChordFret(${index}, ${fretIdx}, this.value)">`
+                                ).join('')}
+                            </div>
+                            
+                            <div class="chord-diagram">${drawChordDiagram(chord.frets)}</div>
+                            
+                            <input type="date" value="${chord.dateLearned || ''}" onchange="updateChord(${index}, 'dateLearned', this.value)">
+                            
+                            <button class="delete-btn" onclick="deleteChord(${index})">Delete Chord</button>
+                        </div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function addChord() {
+            console.log('Opening chord modal');
+            document.getElementById('chordModal').classList.add('show');
+            document.getElementById('chordNameInput').value = '';
+            document.getElementById('chordNameInput').focus();
+        }
+
+        function closeChordModal() {
+            console.log('Closing chord modal');
+            document.getElementById('chordModal').classList.remove('show');
+        }
+
+        function confirmAddChord() {
+            const chordName = document.getElementById('chordNameInput').value.trim();
+            console.log('Chord name from modal:', chordName);
+            console.log('Current data.chords:', data.chords);
+            
+            // Ensure chords array exists
+            if (!data.chords) {
+                console.log('Initializing chords array');
+                data.chords = [];
+            }
+            
+            const finalName = chordName === '' ? 'New Chord' : chordName;
+            const preset = chordPresets[chordName] || { frets: ['0', '0', '0', '0', '0', '0'] };
+            
+            data.chords.push({
+                name: finalName,
+                frets: [...preset.frets],
+                dateLearned: new Date().toISOString().split('T')[0]
+            });
+            
+            console.log('Chord added:', data.chords);
+            saveData();
+            render();
+            closeChordModal();
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('chordNameInput');
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        confirmAddChord();
+                    }
+                });
+            }
+        });
+
+        function updateChord(index, field, value) {
+            data.chords[index][field] = value;
+            saveData();
+            render();
+        }
+
+        function updateChordFret(index, fretIdx, value) {
+            data.chords[index].frets[fretIdx] = value;
+            saveData();
+            render();
+        }
+
+        function applyChordPreset(index, presetName) {
+            if (presetName && chordPresets[presetName]) {
+                data.chords[index].frets = [...chordPresets[presetName].frets];
+                data.chords[index].name = presetName;
+                saveData();
+                render();
+            }
+        }
+
+        function deleteChord(index) {
+            if (confirm('Delete this chord?')) {
+                data.chords.splice(index, 1);
+                saveData();
+                render();
+            }
+        }
+
+        function renderSkills() {
+            const container = document.getElementById('skillsList');
+            container.innerHTML = '';
+            
+            data.skills.forEach((skill, index) => {
+                const isCompleted = data.skillsCompleted.includes(skill);
+                const item = document.createElement('div');
+                item.className = 'skill-item' + (isCompleted ? ' completed' : '');
+                item.innerHTML = `
+                    <input type="checkbox" class="skill-checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleSkill('${skill}')">
+                    <span class="skill-label">${skill}</span>
+                    <button class="delete-btn edit-mode" onclick="deleteSkill(${index})">×</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleSkill(skill) {
+            const index = data.skillsCompleted.indexOf(skill);
+            if (index > -1) {
+                data.skillsCompleted.splice(index, 1);
+            } else {
+                data.skillsCompleted.push(skill);
+            }
+            saveData();
+            render();
+        }
+
+        function addSkill() {
+            const skillName = prompt('Enter new skill:');
+            if (skillName) {
+                data.skills.push(skillName);
+                saveData();
+                render();
+            }
+        }
+
+        function deleteSkill(index) {
+            if (confirm('Delete this skill?')) {
+                data.skills.splice(index, 1);
+                saveData();
+                render();
+            }
+        }
+
+        function renderSongs() {
+            const container = document.getElementById('songsList');
+            container.innerHTML = '';
+            
+            data.songs.forEach((song, index) => {
+                const item = document.createElement('div');
+                item.className = 'song-item';
+                
+                if (document.body.classList.contains('viewing')) {
+                    item.innerHTML = `
+                        <div class="song-header">
+                            <div class="song-title">${song.title}</div>
+                            <div class="song-status ${song.status === 'mastered' ? 'status-mastered' : 'status-learning'}">
+                                ${song.status === 'mastered' ? '⭐ Mastered!' : '🎵 Learning'}
+                            </div>
+                        </div>
+                        <div class="song-dates">
+                            ${song.dateStarted ? 'Started: ' + new Date(song.dateStarted).toLocaleDateString() : ''}
+                            ${song.dateMastered ? ' | Mastered: ' + new Date(song.dateMastered).toLocaleDateString() : ''}
+                        </div>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <div class="input-group">
+                            <label>Song Title:</label>
+                            <input type="text" value="${song.title}" onchange="updateSong(${index}, 'title', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label>Status:</label>
+                            <select onchange="updateSong(${index}, 'status', this.value)">
+                                <option value="learning" ${song.status === 'learning' ? 'selected' : ''}>Learning</option>
+                                <option value="mastered" ${song.status === 'mastered' ? 'selected' : ''}>Mastered</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Date Started:</label>
+                            <input type="date" value="${song.dateStarted || ''}" onchange="updateSong(${index}, 'dateStarted', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label>Date Mastered:</label>
+                            <input type="date" value="${song.dateMastered || ''}" onchange="updateSong(${index}, 'dateMastered', this.value)">
+                        </div>
+                        <button class="delete-btn" onclick="deleteSong(${index})">Delete Song</button>
+                    `;
+                }
+                container.appendChild(item);
+            });
+
+            if (container.children.length === 0 && document.body.classList.contains('viewing')) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No songs yet! Time to start learning! 🎸</p>';
+            }
+        }
+
+        function addSong() {
+            data.songs.push({
+                title: 'New Song',
+                status: 'learning',
+                dateStarted: new Date().toISOString().split('T')[0],
+                dateMastered: ''
+            });
+            saveData();
+            render();
+        }
+
+        function updateSong(index, field, value) {
+            data.songs[index][field] = value;
+            saveData();
+            render();
+        }
+
+        function deleteSong(index) {
+            console.log('Deleting song at index:', index);
+            data.songs.splice(index, 1);
+            console.log('Songs after deletion:', data.songs);
+            saveData();
+            render();
+        }
+
+        function renderPractices() {
+            const container = document.getElementById('practiceLog');
+            container.innerHTML = '';
+            
+            data.practices.slice().reverse().forEach((practice, reverseIndex) => {
+                const index = data.practices.length - 1 - reverseIndex;
+                const item = document.createElement('div');
+                item.className = 'practice-entry';
+                
+                if (document.body.classList.contains('viewing')) {
+                    item.innerHTML = `
+                        <div class="practice-header">
+                            <span>${new Date(practice.date).toLocaleDateString()}</span>
+                            <span>${practice.minutes} minutes</span>
+                        </div>
+                        <div class="practice-content">
+                            <strong>Worked on:</strong> ${practice.workedOn}<br>
+                            <strong>What went well:</strong> ${practice.wentWell}<br>
+                            <strong>To improve:</strong> ${practice.toImprove}
+                        </div>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <div class="input-group">
+                            <label>Date:</label>
+                            <input type="date" value="${practice.date}" onchange="updatePractice(${index}, 'date', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label>Minutes:</label>
+                            <input type="number" value="${practice.minutes}" onchange="updatePractice(${index}, 'minutes', this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label>What I worked on:</label>
+                            <textarea onchange="updatePractice(${index}, 'workedOn', this.value)">${practice.workedOn}</textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>What went well:</label>
+                            <textarea onchange="updatePractice(${index}, 'wentWell', this.value)">${practice.wentWell}</textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>To improve:</label>
+                            <textarea onchange="updatePractice(${index}, 'toImprove', this.value)">${practice.toImprove}</textarea>
+                        </div>
+                        <button class="delete-btn" onclick="deletePractice(${index})">Delete Entry</button>
+                    `;
+                }
+                container.appendChild(item);
+            });
+
+            if (container.children.length === 0 && document.body.classList.contains('viewing')) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No practice entries yet!</p>';
+            }
+        }
+
+        function addPractice() {
+            data.practices.push({
+                date: new Date().toISOString().split('T')[0],
+                minutes: 0,
+                workedOn: '',
+                wentWell: '',
+                toImprove: ''
+            });
+            saveData();
+            render();
+        }
+
+        function updatePractice(index, field, value) {
+            data.practices[index][field] = value;
+            saveData();
+        }
+
+        function deletePractice(index) {
+            console.log('Deleting practice at index:', index);
+            data.practices.splice(index, 1);
+            saveData();
+            render();
+        }
+
+        // Update student name
+        document.getElementById('studentName').addEventListener('change', function() {
+            data.studentName = this.value;
+            saveData();
+            render();
+        });
+
+        // Update records
+        ['record1', 'record2', 'record3', 'record4'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                data.records[id].value = this.value;
+                saveData();
+                render();
+            });
+            document.getElementById('date' + id.slice(-1)).addEventListener('change', function() {
+                data.records[id].date = this.value;
+                saveData();
+                render();
+            });
+        });
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
